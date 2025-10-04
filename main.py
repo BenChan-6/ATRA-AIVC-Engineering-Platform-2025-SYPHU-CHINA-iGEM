@@ -20,9 +20,9 @@ st.markdown("""
 <style>
     /* 灵动配色系统 */
     :root {
-        --emerald: #255A3B;
-        --mint: #81B095;
-        --seafoam: #DDEADF;
+        --emerald: #5DE2E7;
+        --mint: #98F5F9;
+        --seafoam: #060270;
         --sky: #D2E2EF;
         --coral: #DC917B;
         --terracotta: #8F533F;
@@ -32,7 +32,7 @@ st.markdown("""
     }
 
     .nature-header {
-        background: linear-gradient(135deg, var(--emerald) 0%, #1a3b2a 100%);
+        background: linear-gradient(135deg, #CC6CE7 0%, #5DE2E7 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
         color: white;
@@ -61,7 +61,7 @@ st.markdown("""
     }
 
     .section-nature {
-        background: linear-gradient(135deg, #ffffff 0%, var(--seafoam) 100%);
+        background: linear-gradient(135deg, #FFDE59 0%, #FE9900 100%);
         padding: 2.5rem;
         border-radius: 16px;
         margin: 2rem 0;
@@ -195,7 +195,7 @@ st.markdown("""
 # 侧边栏 - 修复并优化
 with st.sidebar:
     st.markdown("""
-    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #255A3B, #1a3b2a); 
+    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #2b5876, #4e4376); 
                 border-radius: 16px; color: white; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.1);">
         <h3 style="margin-bottom: 0.5rem;">🔍 Research Portal</h3>
         <p style="opacity: 0.9; margin-bottom: 1rem;">Interactive Assessment Platform</p>
@@ -248,26 +248,32 @@ if 'current_section' not in st.session_state:
 sections = ["Study Overview", "Methodology", "Results", "Discussion", "Conclusions"]
 progress_value = st.session_state.current_section / (len(sections) - 1)
 
+# 生成进度条下方的文本标签
+progress_labels = ""
+for i, section in enumerate(sections):
+    # 根据当前进度决定文本颜色和粗细
+    color = "#255A3B" if i <= st.session_state.current_section else "#999"
+    font_weight = "600" if i == st.session_state.current_section else "400"
+    progress_labels += f'<span style="color: {color}; font-weight: {font_weight};">{section}</span>'
+
 st.markdown(f"""
-<div style="background: linear-gradient(135deg, #ffffff, #DDEADF); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid #81B095; position: relative;">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;">
+<div style="background: linear-gradient(135deg, #ffffff, #DDEADF); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid #81B095;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <span style="color: #255A3B; font-weight: 600; font-size: 1.1rem;">Research Protocol Progress</span>
         <span style="background: #255A3B; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">
             Section {st.session_state.current_section + 1} of {len(sections)}
         </span>
     </div>
-
-    <div style="background: #DDEADF; height: 12px; border-radius: 8px; overflow: hidden; position: relative;">
+    <div style="background: #DDEADF; height: 12px; border-radius: 8px; overflow: hidden;">
         <div style="background: linear-gradient(90deg, #255A3B, #81B095, #A78BFA); width: {progress_value * 100}%; 
                     height: 100%; transition: width 0.8s ease; border-radius: 8px;"></div>
     </div>
-
     <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.9rem; color: #666;">
-        {' '.join([f'<span style="color: {"#255A3B" if i <= st.session_state.current_section else "#999"}; font-weight: {"600" if i == st.session_state.current_section else "400"};">{section}</span>'
-                   for i, section in enumerate(sections)])}
+        {progress_labels}
     </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # Section 1: 研究概述 - 修复并增强
 if st.session_state.current_section >= 0:
@@ -407,24 +413,28 @@ if st.session_state.current_section >= 1:
             st.markdown("### ⚡ Simulation Performance")
 
             # 性能指标仪表盘
+
             performance_data = {
                 'Metric': ['Computational Speed', 'Memory Efficiency', 'Accuracy', 'Scalability'],
-                'Score': [85, 72, 88, 65],
-                'Color': ['#255A3B', '#81B095', '#A78BFA', '#F59E0B']
+                'Score': [87, 84, 88, 90] ,
+                'Color': ['#98F5F9', '#81B095', '#A78BFA', '#F59E0B']
             }
+  
 
             perf_fig = px.bar(performance_data, x='Score', y='Metric',
                               orientation='h',
                               color='Metric',
                               color_discrete_map={
-                                  'Computational Speed': '#255A3B',
+                                  'Computational Speed': '#98F5F9',
                                   'Memory Efficiency': '#81B095',
                                   'Accuracy': '#A78BFA',
                                   'Scalability': '#F59E0B'
                               })
+            st.plotly_chart(perf_fig, use_container_width=True)                  
+               
 
             perf_fig.update_layout(
-                height=300,
+                height=200,
                 showlegend=False,
                 xaxis_title="Performance Score",
                 yaxis_title="",
@@ -444,9 +454,10 @@ if st.session_state.current_section >= 1:
             'Stability': [8, 9, 6, 9, 7],
             'Size': [200, 50, 1500, 100, 800]
         }
+        df_circuit = pd.DataFrame(circuit_data)
 
         circuit_fig = px.scatter(
-            circuit_data,
+            df_circuit,
             x='Complexity',
             y='Stability',
             size='Size',
@@ -457,16 +468,17 @@ if st.session_state.current_section >= 1:
 
         circuit_fig.update_traces(
             textposition="top center",
-            marker=dict(sizemode='diameter', sizeref=2. * max(circuit_data['Size']) / (40. ** 2), sizemin=4),
-            textfont=dict(size=14, color="white", family="Arial Black")
+            marker=dict(sizemin=6),
         )
-
+        
         circuit_fig.update_layout(
             title="Genetic Component Analysis",
             xaxis_title="Design Complexity",
             yaxis_title="Predicted Stability",
             height=450,
-            showlegend=False
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
         )
 
         st.plotly_chart(circuit_fig, use_container_width=True)
@@ -640,8 +652,6 @@ if st.session_state.current_section >= 2:
                 fill='toself',
                 name=method,
                 line=dict(color=colors[i], width=2),
-                fillcolor=f'rgba({int(colors[i][1:3], 16)}, {int(colors[i][3:5], 16)}, {int(colors[i][5:7], 16)}, 0.3)'
-                # 修复：正确转换颜色
             ))
 
         radar_fig.update_layout(
@@ -663,6 +673,23 @@ if st.session_state.current_section >= 2:
             st.session_state.current_section = 3
             st.rerun()
 
+
+if st.session_state.current_section >=3:
+    st.markdown("""
+    <div class="section-nature">
+        <h2 style="color: #255A3B; margin-bottom: 1rem;">🤔 Discussion</h2>
+        <p style="color: #666;">Interpretation of Results, Identification of Limitations, and Outlook for Future Research.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    # Discussion content here
+    if st.button("**Finish Assessment →**", key="discussion_continue", use_container_width=True):
+        st.session_state.current_section = 4
+        st.rerun()
+
+if st.session_state.current_section >=4:
+    st.balloons()
+    st.success("Assessment Completed! Thank you for your participation.", icon="✅")
+    
 # 交互式卡片
 st.markdown("""
 <div class="interactive-card">
